@@ -1,0 +1,216 @@
+dev@deb-dev-02:~/ca/root$ openssl genrsa -aes256 -out private/ca.key.pem 4096
+
+
+dev@deb-dev-02:~/ca/root$ openssl req -config openssl.conf -key private/ca.key.pem -new -x509 -days 7300 -sha256 -extensions v3_ca -out certs/ca.cert.pem
+Enter pass phrase for private/ca.key.pem:
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [GB]:RO
+State or Province Name [England]:Bucharest
+Locality Name []:Bucharest
+Organization Name [Alice Ltd]:GSR 
+Organizational Unit Name []:GSR CA
+Common Name []:GSR Root CA    
+
+dev@deb-dev-02:~/ca/root$ openssl x509 -noout -text -in certs/ca.cert.pem
+
+dev@deb-dev-02:~/ca/intermediate$ openssl genrsa -aes256 -out private/intermediate.key.pem 4096
+dev@deb-dev-02:~/ca/intermediate$ openssl req -config openssl.conf -new -sha256 -key private/intermediate.key.pem -out csr/intermediate.csr.pem
+Enter pass phrase for private/intermediate.key.pem:
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [GB]:RO
+State or Province Name [England]:Bucharest
+Locality Name []:Bucharest
+Organization Name [Alice Ltd]:GSR
+Organizational Unit Name []:GSR CA
+Common Name []:GSR Intermediate CA
+Email Address []:
+
+dev@deb-dev-02:~/ca/intermediate$ openssl ca -config ../root/openssl.conf -extensions v3_intermediate_ca -days 3650 -notext -md sha256 -in csr/intermediate.csr.pem -out certs/intermediate.cert.pem
+Using configuration from ../root/openssl.conf
+Enter pass phrase for /home/dev/ca/root/private/ca.key.pem:
+Check that the request matches the signature
+Signature ok
+Certificate Details:
+        Serial Number: 4096 (0x1000)
+        Validity
+            Not Before: Dec  7 08:26:23 2016 GMT
+            Not After : Dec  5 08:26:23 2026 GMT
+        Subject:
+            countryName               = RO
+            stateOrProvinceName       = Bucharest
+            organizationName          = GSR
+            organizationalUnitName    = GSR CA
+            commonName                = GSR Intermediate CA
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                CA:99:DB:35:D7:F2:56:23:43:62:CA:46:38:9B:EF:1F:F0:D1:48:22
+            X509v3 Authority Key Identifier: 
+                keyid:52:4B:79:D2:24:FB:53:C6:BF:98:11:02:7F:FE:F4:F3:F9:10:D9:01
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+Certificate is to be certified until Dec  5 08:26:23 2026 GMT (3650 days)
+Sign the certificate? [y/n]:y
+dev@deb-dev-02:~/ca/intermediate$ openssl genrsa -aes256 -out private/mail.root.gsr.key.pem 2048
+Generating RSA private key, 2048 bit long modulus
+...........................................+++
+...........................................................................................+++
+e is 65537 (0x10001)
+Enter pass phrase for private/mail.root.gsr.key.pem:
+Verifying - Enter pass phrase for private/mail.root.gsr.key.pem:
+
+dev@deb-dev-02:~/ca/intermediate$ openssl req -config openssl.conf -key private/mail.root.gsr.key.pem -new -sha256 -out csr/mail.root.gsr.csr.pem
+Enter pass phrase for private/mail.root.gsr.key.pem:
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [GB]:RO
+State or Province Name [England]:Bucharest
+Locality Name []:Bucharest
+Organization Name [Alice Ltd]:root gsr mail service
+Organizational Unit Name []:people that know how to use computers
+Common Name []:mail.root.gsr
+Email Address []:
+
+dev@deb-dev-02:~/ca/intermediate$ openssl ca -config openssl.conf -extensions server_cert -days 375 -notext -md sha256 -in csr/mail.root.gsr.csr.pem -out certs/mail.root.gsr.cert.pem
+Using configuration from openssl.conf
+Enter pass phrase for /home/dev/ca/intermediate/private/intermediate.key.pem:
+Check that the request matches the signature
+Signature ok
+Certificate Details:
+        Serial Number: 4096 (0x1000)
+        Validity
+            Not Before: Dec  7 08:40:48 2016 GMT
+            Not After : Dec 17 08:40:48 2017 GMT
+        Subject:
+            countryName               = RO
+            stateOrProvinceName       = Bucharest
+            localityName              = Bucharest
+            organizationName          = root gsr mail service
+            organizationalUnitName    = people that know how to use computers
+            commonName                = mail.root.gsr
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Cert Type: 
+                SSL Server
+            Netscape Comment: 
+                OpenSSL Generated Server Certificate
+            X509v3 Subject Key Identifier: 
+                1B:0D:E9:19:FD:1B:04:E0:6A:32:20:68:AD:03:11:77:E6:B8:5C:66
+            X509v3 Authority Key Identifier: 
+                keyid:CA:99:DB:35:D7:F2:56:23:43:62:CA:46:38:9B:EF:1F:F0:D1:48:22
+                DirName:/C=RO/ST=Bucharest/L=Bucharest/O=GSR/OU=GSR CA/CN=GSR Root CA
+                serial:10:00
+
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+Certificate is to be certified until Dec 17 08:40:48 2017 GMT (375 days)
+Sign the certificate? [y/n]:y
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+
+dev@deb-dev-02:~/ca/intermediate$ openssl x509 -noout -text -in certs/mail.root.gsr.cert.pem 
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 4096 (0x1000)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=RO, ST=Bucharest, O=GSR, OU=GSR CA, CN=GSR Intermediate CA
+        Validity
+            Not Before: Dec  7 08:40:48 2016 GMT
+            Not After : Dec 17 08:40:48 2017 GMT
+        Subject: C=RO, ST=Bucharest, L=Bucharest, O=root gsr mail service, OU=people that know how to use computers, CN=mail.root.gsr
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:a2:d2:3e:6c:d1:9d:fb:48:2e:5b:19:ce:e5:73:
+                    7f:67:fa:38:73:db:b7:c5:ff:96:8c:8f:37:58:7c:
+                    59:55:a5:33:c5:bc:98:80:a1:66:d7:e3:03:21:81:
+                    82:69:ab:0a:9b:b4:e6:eb:19:a3:4f:31:fa:85:24:
+                    97:5e:b5:9d:6c:74:1f:88:26:6e:e8:ee:bf:de:92:
+                    3a:1c:b7:db:61:8c:50:1d:48:10:c1:4a:22:ba:69:
+                    65:9f:75:dc:41:53:5e:fb:2f:9a:0e:cb:ee:5f:31:
+                    88:63:d5:19:eb:37:bd:42:bb:55:8d:87:e8:29:e3:
+                    6d:52:0e:ac:e6:76:b1:79:b5:14:a9:b6:cb:d0:c4:
+                    43:80:0b:55:42:0b:01:65:93:dc:29:dd:a9:d4:8a:
+                    9c:0a:a1:70:3b:ed:18:45:03:9e:0b:42:55:19:fb:
+                    43:22:b6:cc:86:f6:7a:56:aa:53:13:81:73:ea:36:
+                    30:71:28:bc:7a:9f:ad:06:5f:de:68:af:a9:eb:3e:
+                    26:47:84:d4:0e:3e:5f:0f:17:fa:fb:86:50:b9:80:
+                    f1:77:f9:ec:c2:9a:f2:f2:d7:51:a7:3b:3a:c9:66:
+                    0d:f8:42:da:dc:03:d7:d8:4c:78:99:f9:13:53:80:
+                    64:d7:8f:f1:52:0b:8f:9a:8f:57:d3:62:be:d9:49:
+                    6c:77
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Cert Type: 
+                SSL Server
+            Netscape Comment: 
+                OpenSSL Generated Server Certificate
+            X509v3 Subject Key Identifier: 
+                1B:0D:E9:19:FD:1B:04:E0:6A:32:20:68:AD:03:11:77:E6:B8:5C:66
+            X509v3 Authority Key Identifier: 
+                keyid:CA:99:DB:35:D7:F2:56:23:43:62:CA:46:38:9B:EF:1F:F0:D1:48:22
+                DirName:/C=RO/ST=Bucharest/L=Bucharest/O=GSR/OU=GSR CA/CN=GSR Root CA
+                serial:10:00
+
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+    Signature Algorithm: sha256WithRSAEncryption
+         56:bc:6d:1d:98:e2:95:35:84:ff:00:f8:4d:9b:75:35:3a:22:
+         e1:5a:ee:fe:18:34:fd:a6:45:ea:31:eb:fc:52:ad:01:d1:da:
+         8a:f0:b2:3a:69:4b:f3:cc:f4:a1:67:ba:2c:68:af:e0:47:44:
+         09:7f:fd:7c:0c:e0:28:ca:3b:f1:cc:72:59:f0:be:1b:62:b6:
+         4f:56:58:f7:c0:15:c8:b6:72:ab:2d:92:98:91:b9:88:86:da:
+         da:c5:31:b6:af:c9:c0:7d:3c:06:20:41:1a:a2:c2:0b:d6:a0:
+         74:51:90:53:81:40:9c:23:1a:b0:90:40:36:32:8c:49:93:f1:
+         4d:18:cb:3d:48:41:97:ec:4e:f2:ed:ee:45:8d:7b:52:83:42:
+         a6:16:7b:57:09:54:d7:39:2b:0a:a4:5c:ef:04:fd:68:18:50:
+         05:74:4f:75:ac:cc:2e:e3:df:ca:de:ce:30:19:cb:b0:9e:f7:
+         d5:8a:ef:d2:2d:0f:e9:4a:0b:3d:eb:68:6f:51:e5:3a:c2:b0:
+         f2:e6:21:af:86:a5:d7:80:f9:1f:e9:9e:a5:07:4c:82:e6:28:
+         90:f8:3f:b0:5e:ae:4a:93:62:27:19:83:a1:c1:06:c0:8e:83:
+         ce:9f:8d:10:5d:89:5e:4c:a6:0a:e0:19:e2:f9:ef:2f:03:f7:
+         f7:18:fa:20:2c:3b:b9:fb:94:51:82:d8:f1:dd:d7:2c:dd:e7:
+         16:3c:ae:da:99:d8:50:d4:3a:38:33:cb:cd:a5:61:f8:d5:34:
+         09:a9:6e:0b:20:66:af:30:12:c3:15:37:d3:1a:55:c9:c8:84:
+         e9:17:94:29:00:a8:0a:b8:3a:73:d8:41:6a:83:9d:00:c6:56:
+         ea:5d:86:6e:eb:3a:9d:a7:f9:22:bb:57:72:97:24:a5:e8:2d:
+         22:37:4d:e9:45:ce:8c:19:89:e9:71:ca:28:c9:98:c9:34:73:
+         8e:47:45:c8:94:00:70:1d:b2:cd:0a:74:e5:33:d3:6f:d2:85:
+         d2:12:06:24:dc:fa:a6:15:4e:40:7e:a8:24:57:a4:65:a4:1d:
+         a0:d8:6e:08:20:97:9f:29:f9:99:c5:6b:56:49:12:9a:01:e6:
+         b3:92:fa:1b:a6:f5:76:64:4e:a7:dc:b7:d1:1e:b3:c6:59:fb:
+         61:9f:90:aa:76:31:de:bc:2f:a5:bc:5b:52:4a:47:04:01:14:
+         49:c6:1d:31:a8:72:cd:f4:48:f3:cc:bf:46:67:17:2b:0a:df:
+         1a:c4:c5:29:f8:dc:9b:70:d3:66:06:52:3d:c1:82:07:3d:f7:
+         7f:d6:21:8d:86:b2:d9:0f:3b:60:8b:68:4b:a5:a3:fd:5b:a2:
+         11:b5:c3:30:c9:d0:fc:6f
+dev@deb-dev-02:~/ca/intermediate$
