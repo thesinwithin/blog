@@ -1,0 +1,37 @@
+ [SlaveAddress = 78h] [Module 1]
+ Item                           |                          Value 
+ ----                           |                          ----- 
+ Status                         |               [STATUS OK](00h) 
+ Input Voltage                  |                        119.5 V 
+ Input Current                  |                         0.97 A 
+ Main Output Voltage            |                        12.09 V 
+ Main Output Current            |                         7.56 A 
+ Temperature 1                  |                        28C/82F 
+ Temperature 2                  |                       38C/100F 
+ Fan 1                          |                       5760 RPM 
+ Fan 2                          |                          0 RPM 
+ Main Output Power              |                           93 W 
+ Input Power                    |                          115 W 
+ PMBus Revision                 |                           0x22 
+ PWS Serial Number              |                P741PCH13XN0453 
+ PWS Module Number              |                    PWS-741P-1R 
+ PWS Revision                   |                         REV1.2 
+
+ [SlaveAddress = 7Ah] [Module 2]
+ Item                           |                          Value 
+ ----                           |                          ----- 
+ Status                         |               [STATUS OK](00h) 
+ Input Voltage                  |                        119.0 V 
+ Input Current                  |                         1.03 A 
+ Main Output Voltage            |                        12.09 V 
+ Main Output Current            |                         8.68 A 
+ Temperature 1                  |                        29C/84F 
+ Temperature 2                  |                       38C/100F 
+ Fan 1                          |                       5536 RPM 
+ Fan 2                          |                          0 RPM 
+ Main Output Power              |                          105 W 
+ Input Power                    |                          123 W 
+ PMBus Revision                 |                           0x22 
+ PWS Serial Number              |                P741PCH13XN0454 
+ PWS Module Number              |                    PWS-741P-1R 
+ PWS Revision                   |                         REV1.2 
