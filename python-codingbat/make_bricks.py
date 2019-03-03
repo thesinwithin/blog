@@ -1,5 +1,5 @@
 #/usr/bin/python
-
+# the problem definition can be found at https://codingbat.com/prob/p118406
 def make_bricks(small, big, goal):
   progress = 0
   for n in xrange(big):
